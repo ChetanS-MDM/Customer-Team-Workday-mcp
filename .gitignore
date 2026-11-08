@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Session data (contains SSO cookies — never commit)
+.workday-mcp/
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug scripts
+capture_absence_apis.py

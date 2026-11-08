@@ -1,0 +1,36 @@
+services:
+  mcp:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - MCP_TRANSPORT=streamable-http
+      - MCP_PORT=8000
+      - DISPLAY=:99
+    volumes:
+      - workday-data:/root/.workday-mcp
+    restart: unless-stopped
+    depends_on:
+      - novnc
+
+  novnc:
+    image: mcr.microsoft.com/playwright/python:v1.49.0-jammy
+    ports:
+      - "6080:6080"
+    volumes:
+      - workday-data:/root/.workday-mcp
+    environment:
+      - DISPLAY=:99
+    command: >
+      bash -c "
+        apt-get update -qq && apt-get install -y -qq xvfb x11vnc novnc websockify > /dev/null 2>&1;
+        Xvfb :99 -screen 0 1400x900x24 &
+        sleep 1;
+        x11vnc -display :99 -rfbport 5900 -shared -forever -nopw &
+        websockify --web=/usr/share/novnc/ 6080 localhost:5900
+      "
+    restart: unless-stopped
+
+volumes:
+  workday-data:
